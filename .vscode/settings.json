@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "exception": "cpp",
+        "__string": "cpp",
+        "ios": "cpp",
+        "__debug": "cpp",
+        "memory": "cpp",
+        "new": "cpp",
+        "stdexcept": "cpp",
+        "typeinfo": "cpp",
+        "iosfwd": "cpp"
+    }
+}
