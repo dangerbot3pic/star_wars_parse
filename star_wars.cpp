@@ -8,8 +8,8 @@ using namespace std;
 enum State
 {
     ALIVE = 1,
-    DEAD = 2,
-    UNKNOWN = 3
+    UNKNOWN = 2,
+    DEAD = 3
 };
 
 enum Action
@@ -48,7 +48,7 @@ int main(int arg, char **args)
     long node_time = 0;
     string person;
 
-    vector<Person>person_list;
+    vector<Person>node;
     Type tmp;
 
     try 
