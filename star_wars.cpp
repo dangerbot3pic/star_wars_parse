@@ -2,54 +2,31 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <algorithm>
+#include <iterator>
+
+#include "person.hpp"
 
 using namespace std;
 
-enum State
-{
-    ALIVE = 1,
-    UNKNOWN = 2,
-    DEAD = 3
-};
 
-enum Action
+int main(int args, char **arg)
 {
-    HELLO = 0,
-    LOST = 1,
-    FOUND = 2
-};
-
-union Type 
-{
-    string *Name;
-    State person_state;
-    Action person_action;
-};
-
-struct Person 
-{
-    string name;
-    State person_state;
-};
-
-
-int main(int arg, char **args)
-{
-    if (arg != 0)
+    if (args != 1)
     {
         cout<<"Incorrect number of arguments"<<endl;
         exit(-1);
     }
 
     ifstream infile;
-    string filename = args[0];
+    string filename = arg[0];
 
     long monitor_time = 0;
     long node_time = 0;
-    string person;
+    string person, person_2, action;
 
-    vector<Person>node;
-    Type tmp;
+    vector<Person*>node;
+    vector<Person*>::iterator it;
 
     try 
     {
@@ -59,6 +36,66 @@ int main(int arg, char **args)
         {
             infile >> monitor_time;
             infile >> node_time;
+            infile >> person;
+            infile >> action;
+
+            if (action == "HELLO")
+            {
+                it = find(node.begin(), node.end(), person);
+
+                if (it == node.end()) node.push_back(new Person(person, "ALIVE", person+"HELLO", monitor_time));
+                else (*it) -> person_state = "ALIVE";
+            }
+
+            else if (action == "LOST")
+            {
+                it = find(node.begin(), node.end(), person);
+
+                if (it == node.end()) node.push_back(new Person(person, "ALIVE", "HELLO", monitor_time));
+                else 
+                {
+                    (*it) -> person_state = "ALIVE"; 
+                    (*it) -> action = person + action + person_2;
+                    (*it) -> timestamp = monitor_time;
+                }
+
+                infile >> person_2;
+
+                it = find(node.begin(), node.end(), person_2);
+
+                if (it == node.end()) node.push_back(new Person(person, "DEAD", person+action+person_2, monitor_time));
+                else 
+                {
+                    (*it) -> person_state = "DEAD"; 
+                    (*it) -> action = person + action + person_2;
+                    (*it) -> timestamp = monitor_time;
+                }
+            }
+
+            else if (action == "FOUND")
+            {
+                it = find(node.begin(), node.end(), person);
+
+                if (it == node.end()) node.push_back(new Person(person, "ALIVE", "HELLO", monitor_time));
+                               else 
+                {
+                    (*it) -> person_state = "ALIVE"; 
+                    (*it) -> action = person + action + person_2;
+                    (*it) -> timestamp = monitor_time;
+                }
+
+                infile >> person_2;
+
+                it = find(node.begin(), node.end(), person_2);
+
+                if (it == node.end()) node.push_back(new Person(person, "ALIVE", person+action+person_2, monitor_time));
+                else 
+                {
+                    (*it) -> person_state = "ALIVE"; 
+                    (*it) -> action = person + action + person_2;
+                    (*it) -> timestamp = monitor_time;
+                }
+            }
         }
     }
 
@@ -72,5 +109,10 @@ int main(int arg, char **args)
     {
         cout<<"ERROR: "<<e.what()<<endl;
         exit(-1);
+    }
+
+    for (int i = 0; i < node.size(); i++)
+    {
+        cout<<node[i];
     }
 }
