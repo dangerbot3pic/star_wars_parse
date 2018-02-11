@@ -93,13 +93,17 @@ int main(int args, char **arg)
 
 void update(const std::string condition, const std::string person_action, const long stamp, const long time, Person &a)
 {
-    if (time > a.node_time && condition != a.person_state) a.person_state ="UNKNOWN";
-    if (time < a.node_time) return;
-    else 
-    {
-        a.person_state = condition; 
+    if (time > a.node_time && condition != a.person_state)
+    { 
+        a.person_state ="UNKNOWN";
         a.action = person_action;
         a.timestamp = stamp;
         a.node_time = time;
     }
+    else if (time < a.node_time) return;
+
+    a.person_state = condition; 
+    a.action = person_action;
+    a.timestamp = stamp;
+    a.node_time = time;
 }
