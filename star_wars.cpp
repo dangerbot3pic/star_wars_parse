@@ -19,7 +19,7 @@ int main(int args, char **arg)
     }
 
     ifstream infile;
-    string filename = arg[1];
+    const string filename = arg[1];
 
     long monitor_time = 0;
     long node_time = 0;
@@ -93,6 +93,7 @@ int main(int args, char **arg)
 
 void update(const std::string condition, const std::string person_action, const long stamp, const long time, Person &a)
 {
+    if (time > a.node_time && condition != a.person_state) a.person_state ="UNKNOWN";
     if (time < a.node_time) return;
     else 
     {
