@@ -29,6 +29,11 @@
         "list": "cpp",
         "string_view": "cpp",
         "__config": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "iostream": "cpp",
+        "fstream": "cpp",
+        "locale": "cpp",
+        "ostream": "cpp",
+        "bitset": "cpp"
     }
 }

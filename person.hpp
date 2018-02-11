@@ -11,12 +11,12 @@ class Person
     std::string person_state;
     std::string action;
     long timestamp;
+    long node_time;
 
-    Person (std::string new_name, std::string condition, std::string person_action, long time) : name(new_name), person_state(condition), action(person_action), timestamp(time) {}
+    Person (std::string new_name, std::string condition, std::string person_action, long time, long n_time) 
+        : name(new_name), person_state(condition), action(person_action), timestamp(time), node_time(n_time) {}
 
-    std::ostream& operator<<(std::ostream &os, const Person &a);
-
-    bool operator==(const Person &a) const;
+    friend void update(const std::string condition, const std::string person_action, const long stamp, const long time, Person &a);
 };
 
 

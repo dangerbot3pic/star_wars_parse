@@ -2,35 +2,38 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include <algorithm>
 #include <iterator>
 
 #include "person.hpp"
 
 using namespace std;
 
+void update(const std::string condition, const std::string person_action, const long stamp, const long time, Person &a);
 
 int main(int args, char **arg)
 {
-    if (args != 1)
+    if (args != 2)
     {
         cout<<"Incorrect number of arguments"<<endl;
         exit(-1);
     }
 
     ifstream infile;
-    string filename = arg[0];
+    string filename = arg[1];
 
     long monitor_time = 0;
     long node_time = 0;
     string person, person_2, action;
+    const string state1 = "ALIVE";
+    string state2 = state1;
 
-    vector<Person*>node;
-    vector<Person*>::iterator it;
+    vector<Person>node;
+    vector<Person>::iterator it;
 
     try 
     {
         infile.open(filename.c_str());
+        if (!infile.is_open()) exit(-1);
 
         while (!infile.eof())
         {
@@ -41,62 +44,32 @@ int main(int args, char **arg)
 
             if (action == "HELLO")
             {
-                it = find(node.begin(), node.end(), person);
+                for (it = node.begin(); it != node.end(); it++) if (it->name == person) break;
 
-                if (it == node.end()) node.push_back(new Person(person, "ALIVE", person+"HELLO", monitor_time));
-                else (*it) -> person_state = "ALIVE";
+                
+                if (it == node.end()) node.push_back(Person(person, state1, person+" "+state1, monitor_time, node_time));
+                else update(state1, person+" "+action, monitor_time, node_time, *it);
             }
 
-            else if (action == "LOST")
+            else
             {
-                it = find(node.begin(), node.end(), person);
-
-                if (it == node.end()) node.push_back(new Person(person, "ALIVE", "HELLO", monitor_time));
-                else 
-                {
-                    (*it) -> person_state = "ALIVE"; 
-                    (*it) -> action = person + action + person_2;
-                    (*it) -> timestamp = monitor_time;
-                }
-
                 infile >> person_2;
+                state2 = state1;
+                if (action == "LOST") state2 = "DEAD";
 
-                it = find(node.begin(), node.end(), person_2);
+                for (it = node.begin(); it != node.end(); it++) if (it->name == person) break;
+                
+                if (it == node.end()) node.push_back(Person(person, state1, person+" "+action+" "+person_2, monitor_time, node_time));
+                else update(state1, person+" "+action+" "+person_2, monitor_time, node_time, *it);
 
-                if (it == node.end()) node.push_back(new Person(person, "DEAD", person+action+person_2, monitor_time));
-                else 
-                {
-                    (*it) -> person_state = "DEAD"; 
-                    (*it) -> action = person + action + person_2;
-                    (*it) -> timestamp = monitor_time;
-                }
-            }
 
-            else if (action == "FOUND")
-            {
-                it = find(node.begin(), node.end(), person);
+                for (it = node.begin(); it != node.end(); it++) if (it->name == person_2) break;
 
-                if (it == node.end()) node.push_back(new Person(person, "ALIVE", "HELLO", monitor_time));
-                               else 
-                {
-                    (*it) -> person_state = "ALIVE"; 
-                    (*it) -> action = person + action + person_2;
-                    (*it) -> timestamp = monitor_time;
-                }
-
-                infile >> person_2;
-
-                it = find(node.begin(), node.end(), person_2);
-
-                if (it == node.end()) node.push_back(new Person(person, "ALIVE", person+action+person_2, monitor_time));
-                else 
-                {
-                    (*it) -> person_state = "ALIVE"; 
-                    (*it) -> action = person + action + person_2;
-                    (*it) -> timestamp = monitor_time;
-                }
+                if (it == node.end()) node.push_back(Person(person_2, state2, person+" "+action+" "+person_2, monitor_time, node_time));
+                else update(state2, person+" "+action+" "+person_2, monitor_time, node_time, *it);
             }
         }
+        infile.close();
     }
 
     catch (std::ifstream::failure &e)
@@ -113,6 +86,19 @@ int main(int args, char **arg)
 
     for (int i = 0; i < node.size(); i++)
     {
-        cout<<node[i];
+        cout<<node[i].name<<" "<<node[i].person_state<<" "<<node[i].timestamp<<" "<<node[i].action<<endl;
+    }
+}
+
+
+void update(const std::string condition, const std::string person_action, const long stamp, const long time, Person &a)
+{
+    if (time < a.node_time) return;
+    else 
+    {
+        a.person_state = condition; 
+        a.action = person_action;
+        a.timestamp = stamp;
+        a.node_time = time;
     }
 }
